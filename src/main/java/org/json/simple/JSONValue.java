@@ -10,12 +10,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
-// import java.util.List;
 import java.util.Map;
-
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 
 /**
  * @author FangYidong<fangyidong@yahoo.com.cn>
@@ -41,6 +36,7 @@ public class JSONValue {
 	 * {@code null}; please use {@link JSONValue#parseWithException(Reader)}
 	 * instead
 	 */
+	@Deprecated
 	public static Object parse(Reader in){
 		try{
 			JSONParser parser=new JSONParser();
@@ -71,6 +67,7 @@ public class JSONValue {
 	 * {@code null}; please use {@link JSONValue#parseWithException(String)}
 	 * instead
 	 */
+	 @Deprecated
 	public static Object parse(String s){
 		StringReader in=new StringReader(s);
 		return parse(in);
@@ -93,6 +90,7 @@ public class JSONValue {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
+	@Deprecated
 	public static Object parseWithException(Reader in) throws IOException, ParseException{
 		JSONParser parser=new JSONParser();
 		return parser.parse(in);
@@ -103,6 +101,26 @@ public class JSONValue {
 		return parser.parse(s);
 	}
 	
+	/**
+	 * Helper function for JSONValue.writeJSONString() 
+	 * to work with modified JSONOnject.writeJSONString()
+	 * Handles nested JSON/map values and passes scope
+	 * else, proceed with normal functionality
+	 *
+	 * @param value
+     * @param writer
+     * @param scope
+	 */
+	 @Deprecated
+	public static void writeJSONString(Object value, Writer out, int scope) throws IOException {
+	   if(value instanceof Map){
+			JSONObject.writeJSONString((Map)value, out, scope);
+			return;
+		}
+		else
+		   JSONValue.writeJSONString(value, out);
+	}
+
     /**
      * Encode an object into JSON text and write it to out.
      * <p>
@@ -117,6 +135,7 @@ public class JSONValue {
      * @param value
      * @param writer
      */
+    @Deprecated
 	public static void writeJSONString(Object value, Writer out) throws IOException {
 		if(value == null){
 			out.write("null");

@@ -35,7 +35,15 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
 		super(map);
 	}
 
-
+    /**
+     * Helper Function for modified JSONObject.writeJSONString()
+     *
+     * @param map
+     * @param out
+     */
+     public static void writeJSONString(Map map, Writer out) throws IOException {
+         JSONObject.writeJSONString(map, out, 0);
+     }
     /**
      * Encode a map into JSON text and write it to out.
      * If this map is also a JSONAware or JSONStreamAware, JSONAware or JSONStreamAware specific behaviours will be ignored at this top level.
@@ -44,29 +52,36 @@ public class JSONObject extends HashMap implements Map, JSONAware, JSONStreamAwa
      * 
      * @param map
      * @param out
+     * @param scope
      */
-	public static void writeJSONString(Map map, Writer out) throws IOException {
+	public static void writeJSONString(Map map, Writer out, int scope) throws IOException {
 		if(map == null){
 			out.write("null");
 			return;
 		}
-		
 		boolean first = true;
 		Iterator iter=map.entrySet().iterator();
-		
-        out.write('{');
+      out.write('{');
+      scope++;
 		while(iter.hasNext()){
             if(first)
                 first = false;
             else
                 out.write(',');
+         out.write('\n');
 			Map.Entry entry=(Map.Entry)iter.next();
-            out.write('\"');
-            out.write(escape(String.valueOf(entry.getKey())));
-            out.write('\"');
-            out.write(':');
-			JSONValue.writeJSONString(entry.getValue(), out);
+			for(int i = 0; i < scope; i++)
+			   out.write('\t');
+         out.write('\"');
+         out.write(escape(String.valueOf(entry.getKey())));
+         out.write('\"');
+         out.write(':');
+			JSONValue.writeJSONString(entry.getValue(), out, scope);
 		}
+		out.write('\n');
+		scope--;
+		for(int i = 0; i < scope; i++)
+			   out.write('\t');
 		out.write('}');
 	}
 
